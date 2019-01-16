@@ -1,0 +1,15 @@
+# Ignore java class files and hidden files.
+*.class
+*/.*    
+
+# Keep Source files.
+!*/*.java
+
+# Keep Jar provided by the course itself.
+!*/*.jar
+
+# Keep Markdown files for elucidation.
+!*/*.md
+
+# Keep Other text files or input file for testing.
+!*/*.txt
