@@ -8,15 +8,30 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     private Item[] _content;
 
     private class Itr implements Iterator<Item> {
+        private int _cur;
+        private Item[] _my_content;
+
+        Itr() {
+            int cnt = 0;
+
+            this._cur = 0;
+            this._my_content = (Item[]) new Object[RandomizedQueue.this._size];
+            for (Item i: RandomizedQueue.this._content) {
+                if (i != null) {
+                    this._my_content[cnt++] = i;
+                }
+            }
+            StdRandom.shuffle(this._my_content);
+        }
 
         @Override
         public boolean hasNext() {
-            return false;
+            return this._cur != this._my_content.length;
         }
 
         @Override
         public Item next() {
-            return null;
+            return this._my_content[this._cur++];
         }
 
         @Override
@@ -81,5 +96,39 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             }
         }
         this._content = n_array;
+    }
+
+    public static void main(String[] args) {
+        RandomizedQueue randomizedQueue = new RandomizedQueue();
+        for (int i=0; i!= 10; ++i) {
+            randomizedQueue.enqueue(i);
+        }
+        Iterator iterator1 = randomizedQueue.iterator();
+        Iterator iterator2 = randomizedQueue.iterator();
+        while (true) {
+            if (!iterator1.hasNext() && !iterator2.hasNext()) {
+                break;
+            }
+            if (iterator1.hasNext()) {
+                System.out.print(iterator1.next()+" ");
+            } else {
+                System.out.print("X ");
+            }
+            if (iterator2.hasNext()) {
+                System.out.print(iterator2.next()+" ");
+            } else {
+                System.out.print("X");
+            }
+            System.out.println();
+        }
+        for (int i=0; i!=10; ++i) {
+            System.out.print(randomizedQueue.sample()+" ");
+        }
+        System.out.println();
+
+        while (!randomizedQueue.isEmpty()) {
+            System.out.print(randomizedQueue.dequeue()+" ");
+        }
+        System.out.println();
     }
 }
