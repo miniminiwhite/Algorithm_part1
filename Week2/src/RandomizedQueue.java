@@ -1,38 +1,37 @@
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.Iterator;
 
 import edu.princeton.cs.algs4.StdRandom;
 
 public class RandomizedQueue<Item> implements Iterable<Item> {
-    private static final int INI_SIZE = 8;
-    private int size;
-    private Item[] content;
+    static int ini_size = 8;
+    private int _size;
+    private Item[] _content;
 
     private class Itr implements Iterator<Item> {
-        private int cur;
-        private final Item[] myContent;
+        private int _cur;
+        private Item[] _my_content;
 
         Itr() {
-            this.cur = 0;
-            this.myContent = (Item[]) new Object[RandomizedQueue.this.size];
-            for (int i = 0; i != RandomizedQueue.this.size; ++i) {
-                this.myContent[i] = RandomizedQueue.this.content[i];
+            int cnt = 0;
+
+            this._cur = 0;
+            this._my_content = (Item[]) new Object[RandomizedQueue.this._size];
+            for (Item i: RandomizedQueue.this._content) {
+                if (i != null) {
+                    this._my_content[cnt++] = i;
+                }
             }
-            StdRandom.shuffle(this.myContent);
+            StdRandom.shuffle(this._my_content);
         }
 
         @Override
         public boolean hasNext() {
-            return this.cur != this.myContent.length;
+            return this._cur != this._my_content.length;
         }
 
         @Override
         public Item next() {
-            if (!this.hasNext()) {
-                throw new java.util.NoSuchElementException();
-            }
-            return this.myContent[this.cur++];
+            return this._my_content[this._cur++];
         }
 
         @Override
@@ -42,60 +41,94 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
 
     public RandomizedQueue() {
-        this.size = 0;
-        resize(INI_SIZE);
+        this._size = 0;
+        resize(ini_size);
     }
 
     public boolean isEmpty() {
-        return this.size == 0;
+        return this._size == 0;
     }
 
     public int size() {
-        return this.size;
+        return this._size;
     }
 
     public void enqueue(Item item) {
         if (item == null) {
             throw new java.lang.IllegalArgumentException();
         }
-        this.content[this.size++] = item;
-        if (this.size == this.content.length) {
-            resize(this.size << 1);
+        this._content[this._size++] = item;
+        if (this._size == this._content.length) {
+            resize(this._size << 1);
         }
     }
     public Item dequeue() {
         if (this.isEmpty()) {
             throw new java.util.NoSuchElementException();
         }
-        int outIdx = StdRandom.uniform(this.size);
-        Item outItem = this.content[outIdx];
-        this.content[outIdx] = this.content[--this.size];
-        this.content[this.size] = null;
-        if (this.size < this.content.length >> 2) {
-            resize(this.content.length >> 1);
+        int out_idx = StdRandom.uniform(this._size);
+        Item out_item = this._content[out_idx];
+        this._content[out_idx] = this._content[--this._size];
+        if (this._size < this._content.length >> 2) {
+            resize(this._content.length >> 1);
         }
-        return outItem;
+        return out_item;
     }
 
     public Item sample() {
         if (this.isEmpty()) {
             throw new java.util.NoSuchElementException();
         }
-        return this.content[StdRandom.uniform(this.size)];
+        return this._content[StdRandom.uniform(this._size)];
     }
 
     public Iterator<Item> iterator() {
         return new Itr();
     }
 
-    private void resize(int newSize) {
-        Item[] newArray = (Item[]) new Object[newSize];
-        if (this.content != null) {
-            for (int i = 0; i != this.size; ++i) {
-                newArray[i] = this.content[i];
-                this.content[i] = null;
+    private void resize(int size) {
+        Item[] n_array = (Item[]) new Object[size];
+        if (this._content != null) {
+            int cur = 0;
+            for (int i=0; i!= this._size; ++i) {
+                n_array[i] = this._content[i];
+                this._content[i] = null;
             }
         }
-        this.content = newArray;
+        this._content = n_array;
+    }
+
+    public static void main(String[] args) {
+        RandomizedQueue randomizedQueue = new RandomizedQueue();
+        for (int i=0; i!= 10; ++i) {
+            randomizedQueue.enqueue(i);
+        }
+        Iterator iterator1 = randomizedQueue.iterator();
+        Iterator iterator2 = randomizedQueue.iterator();
+        while (true) {
+            if (!iterator1.hasNext() && !iterator2.hasNext()) {
+                break;
+            }
+            if (iterator1.hasNext()) {
+                System.out.print(iterator1.next()+" ");
+            } else {
+                System.out.print("X ");
+            }
+            if (iterator2.hasNext()) {
+                System.out.print(iterator2.next()+" ");
+            } else {
+                System.out.print("X");
+            }
+            System.out.println();
+        }
+        for (int i=0; i!=10; ++i) {
+            System.out.print(randomizedQueue.sample()+" ");
+        }
+        System.out.println();
+
+        while (!randomizedQueue.isEmpty()) {
+            System.out.print(randomizedQueue.dequeue()+" ");
+        }
+        System.out.println();
     }
 }

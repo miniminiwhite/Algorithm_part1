@@ -1,42 +1,42 @@
 import java.util.Iterator;
 
 public class Deque<Item> implements Iterable<Item> {
-    private int size;
-    private Node head;
-    private Node tail;
+    private int _size;
+    private Node _head;
+    private Node _tail;
 
     private class Node {
-        final private Item item;
-        private Node prev;
-        private Node next;
+        private Item _item;
+        private Node _prev;
+        private Node _next;
 
         Node(Item item) {
-            this.item = item;
-            this.prev = null;
-            this.next = null;
+            this._item = item;
+            this._prev = null;
+            this._next = null;
         }
 
-        void setPrev(Node prev) {
-            this.prev = prev;
+        void set_prev(Node prev) {
+            this._prev = prev;
         }
 
-        void setNext(Node next) {
-            this.next = next;
+        void set_next(Node next) {
+            this._next = next;
         }
     }
 
     private class Itr implements Iterator<Item> {
-        private int cur;
-        private Node curNode;
+        private int _cur;
+        private Node _cur_node;
 
         Itr() {
-            this.cur = 0;
-            this.curNode = Deque.this.head;
+            this._cur = 0;
+            this._cur_node = Deque.this._head;
         }
 
         @Override
         public boolean hasNext() {
-            return cur != Deque.this.size();
+            return _cur != Deque.this.size();
         }
 
         @Override
@@ -44,11 +44,10 @@ public class Deque<Item> implements Iterable<Item> {
             if (!this.hasNext()) {
                 throw new java.util.NoSuchElementException();
             }
-            if (this.cur != 0) {
-                this.curNode = this.curNode.next;
+            if (this._cur++ != 0) {
+                this._cur_node = this._cur_node._next;
             }
-            this.cur++;
-            return this.curNode.item;
+            return this._cur_node._item;
         }
 
         @Override
@@ -58,82 +57,99 @@ public class Deque<Item> implements Iterable<Item> {
     }
 
     public Deque() {
-        this.size = 0;
-        this.head = null;
-        this.tail = null;
+        this._size = 0;
+        this._head = null;
+        this._tail = null;
     }
 
     public boolean isEmpty() {
-        return this.size == 0;
+        return this._size== 0;
     }
 
     public int size() {
-        return this.size;
+        return this._size;
     }
 
     public void addFirst(Item item) {
         if (item == null) {
             throw new java.lang.IllegalArgumentException();
         }
-        Node newHead = new Node(item);
-        newHead.setNext(this.head);
-        if (this.head != null) {
-            this.head.setPrev(newHead);
+        Node n_head = new Node(item);
+        n_head.set_next(this._head);
+        if (this._head != null) {
+            this._head.set_prev(n_head);
         } else {
-            this.tail = newHead;
+            this._tail = n_head;
         }
-        this.size++;
-        this.head = newHead;
+        this._size++;
+        this._head = n_head;
     }
 
     public void addLast(Item item) {
         if (item == null) {
             throw new java.lang.IllegalArgumentException();
         }
-        Node newTail = new Node(item);
-        newTail.setPrev(this.tail);
-        if (this.tail != null) {
-            this.tail.setNext(newTail);
+        Node n_tail = new Node(item);
+        n_tail.set_prev(this._tail);
+        if (this._tail != null) {
+            this._tail.set_next(n_tail);
         } else {
-             this.head = newTail;
+             this._head = n_tail;
         }
-        this.size++;
-        this.tail = newTail;
+        this._size++;
+        this._tail = n_tail;
     }
 
     public Item removeFirst() {
         if (this.isEmpty()) {
             throw new java.util.NoSuchElementException();
         }
-        Node curHead = this.head;
-        this.head = curHead.next;
-        if (this.head != null) {
-            this.head.setPrev(null);
-        } else {
-            this.tail = null;
+        Node cur_head = this._head;
+        this._head = cur_head._next;
+        if (this._head != null) {
+            this._head.set_prev(null);
         }
-        curHead.setNext(null);
-        this.size--;
-        return curHead.item;
+        cur_head.set_next(null);
+        this._size--;
+        return cur_head._item;
     }
 
     public Item removeLast() {
         if (this.isEmpty()) {
             throw new java.util.NoSuchElementException();
         }
-        Node curTail = this.tail;
-        this.tail = curTail.prev;
-        if (this.tail != null) {
-            this.tail.setNext(null);
-        } else {
-            this.head = null;
+        Node cur_tail = this._tail;
+        this._tail = cur_tail._prev;
+        if (this._tail != null) {
+            this._tail.set_next(null);
         }
-        curTail.setPrev(null);
-        this.size--;
-        return curTail.item;
+        cur_tail.set_prev(null);
+        this._size--;
+        return cur_tail._item;
     }
 
     public Iterator<Item> iterator() {
         return new Itr();
+    }
+
+    public static void main(String[] args) {
+        Deque deque = new Deque();
+        for (int i=0; i!=10; ++i) {
+            if ((i&1) == 0) {
+                deque.addFirst(i);
+            } else {
+                deque.addLast(i);
+            }
+        }
+        Iterator iterator = deque.iterator();
+        while (iterator.hasNext()) {
+            System.out.println(iterator.next()+" "+iterator.hasNext());
+        }
+        while (!deque.isEmpty()) {
+            System.out.println(deque.removeFirst());
+            if (!deque.isEmpty()) {
+                System.out.println(deque.removeLast());
+            }
+        }
     }
 }
