@@ -1,6 +1,8 @@
-# Ignore java class files and hidden files.
+# Ignore java class files, zipped files and hidden files.
+*/.*
+*.out
 *.class
-*/.*    
+*.zip
 
 # Keep Source files.
 !*/*.java
