@@ -1,94 +1,55 @@
-import javax.sound.sampled.Line;
-import java.util.Comparator;
+import edu.princeton.cs.algs4.Merge;
+
+import java.util.ArrayList;
 
 public class BruteCollinearPoints {
-    private static LineSegment[] lineSegments;
-    private static Point[] augmentArray;
+    private final ArrayList<LineSegment> lineSegments;
 
-    public BruteCollinearPoints(Point[] points) throws IllegalArgumentException {
-        int len = points.length;
-        ResizeArray resizeArray = new ResizeArray();
-        Comparator<Point> pointComparator;
-
-        sort(points, 0, points.length);
-        for (int i = 0; i != len - 4; ++i) {
-            for (int j = i + 1; j != len - 3; ++j) {
-                for (int k = j + 1; k != len - 2; ++k) {
-                    for (int l = k + 1; l != len - 1; ++l) {
-                        pointComparator = points[i].slopeOrder();
-                        if (pointComparator.compare(points[j], points[k]) == 0
-                        && pointComparator.compare(points[k], points[l]) == 0) {
-                            resizeArray.PushBack(new LineSegment(points[i], points[l]));
+    public BruteCollinearPoints(Point[] points) {
+        try {
+            Point[] localPoints = new Point[points.length];
+            lineSegments = new ArrayList<>();
+            for (int i = 0; i != points.length; ++i) {
+                localPoints[i] = points[i];
+                if (points[i] == null) {
+                    throw new IllegalArgumentException();
+                }
+            }
+            Merge.sort(localPoints);
+            for (int i = 1; i < localPoints.length; ++i) {
+                if (localPoints[i].compareTo(localPoints[i - 1]) == 0) {
+                    throw new IllegalArgumentException();
+                }
+            }
+            for (int i = 0; i < localPoints.length - 3; ++i) {
+                for (int j = i + 1; j < localPoints.length - 2; ++j) {
+                    for (int k = j + 1; k < localPoints.length - 1; ++k) {
+                        for (int l = k + 1; l < localPoints.length; ++l) {
+                            double slope1 = localPoints[i].slopeTo(localPoints[j]);
+                            double slope2 = localPoints[j].slopeTo(localPoints[k]);
+                            double slope3 = localPoints[k].slopeTo(localPoints[l]);
+                            if (slope1 == slope2 && slope2 == slope3) {
+                                lineSegments.add(new LineSegment(localPoints[i], localPoints[l]));
+                            }
                         }
                     }
                 }
             }
+        } catch (NullPointerException e) {
+            throw new IllegalArgumentException();
         }
-        lineSegments = resizeArray.GetContent();
     }
 
     public int numberOfSegments() {
-        return lineSegments.length;
+        return lineSegments.size();
     }
 
     public LineSegment[] segments() {
-        return lineSegments;
+        return lineSegments.toArray(new LineSegment[numberOfSegments()]);
     }
 
-    private void sort(Point[] points, int start, int end) {
-        int mid = (start + end) / 2;
-        int i = start, j = mid, k = start;
-        if (end - start > 1) {
-            sort(points, start, mid);
-            sort(points, mid, end);
-        }
-        // Merge here.
-        while (i != mid && j != end) {
-            if (points[i].compareTo(points[j]) > 0) {
-                augmentArray[k++] = points[i++];
-            } else {
-                augmentArray[k++] = points[j++];
-            }
-        }
-        while (i != mid) {
-            augmentArray[k++] = points[i++];
-        }
-        while (j != end) {
-            augmentArray[k++] = points[j++];
-        }
-        for (i = start; i != end; ++i) {
-            points[i] = augmentArray[i];
-        }
-    }
-
-    class ResizeArray {
-        private LineSegment[] content;
-        private int cur = 0;
-
-        ResizeArray() {
-            content = new LineSegment[8];
-            cur = 0;
-        }
-
-        void PushBack(LineSegment item) {
-            content[cur++] = item;
-            if (cur == content.length) {
-                Resize(cur << 1);
-            }
-        }
-
-        void Resize(int length) {
-            LineSegment[] newContent = new LineSegment[length];
-            for (int i = 0; i != cur; ++i) {
-                newContent[i] = content[i];
-                content[i] = null;
-            }
-            content = newContent;
-        }
-
-        LineSegment[] GetContent() {
-            Resize(cur);
-            return content;
-        }
+   public static void main(String[] args) {
+        Point[] point = new Point[1];
+        BruteCollinearPoints bruteCollinearPoints = new BruteCollinearPoints(null);
     }
 }
