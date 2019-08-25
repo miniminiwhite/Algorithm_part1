@@ -3,6 +3,7 @@
 *.out
 *.class
 *.zip
+*.iml
 
 # Keep Source files.
 !*/*.java
